@@ -1,0 +1,23 @@
+v.1.8.27
+- MySQLdb module has been replaced with pymysql
+    - subsequently pymysql breaks everything else related to the database backup
+    - replaced with full command line
+
+v.1.8.11
+- Rework backup retention
+    - Keeps the last backup for the configured number of days now
+- Allow caches, but clean them up once done
+- Fix syntax error in system updater
+
+v.1.8.01
+- Implement app update method without having to manually download from Git Releases
+    - Will work after this update and going forward
+    - Can also add a cron job to automate
+- Update ignore for releases
+    - Had to do this for the auto-update above
+- Fix ClamAV install
+    - App uses alot of memory and can cause OOM issues on servers with under 2G of RAM
+    - Implement check for total system memory and only install if 2G or greater
+
+v.1.7.33
+ - Initial build-out, compile, and release
