@@ -40,38 +40,12 @@ class KP_Update:
 
             # throw an error message here
             self.common.my_print( "info", ( "*" * 52 ) )
-            self.common.my_print( "error", "You must pass the --update argument [app|system|wordpress]." )
+            self.common.my_print( "error", "You must pass the --update argument [wordpress]." )
             self.common.my_print( "info", ( "*" * 52 ) )
             sys.exit( )
 
-        # if we are updating the app
-        if self.parsed_args.update.lower( ) == "app":
-
-            # import the setup class/module
-            from work.update.app import KP_App_Update
-            _app = KP_App_Update( )
-
-            # run the app updater
-            _app.update_app( )
-
-            # clean up
-            del _app
-
-        # we are updating the system
-        elif self.parsed_args.update.lower( ) == "system":
-            
-            # import the setup class/module
-            from work.update.system import KP_System_Update
-            _sys = KP_System_Update( )
-
-            # run the system updater
-            _sys.update_system( )
-
-            # clean up
-            del _sys
-
         # we are updating wordpress
-        elif self.parsed_args.update.lower( ) == "wordpress":
+        if self.parsed_args.update.lower( ) == "wordpress":
 
             # import the class/module
             from work.update.wordpress import KP_Wordpress_Update
@@ -84,4 +58,3 @@ class KP_Update:
 
             # clean up
             del _wp
-

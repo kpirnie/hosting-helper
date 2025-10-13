@@ -10,7 +10,7 @@ from argparse import RawTextHelpFormatter
 from work.common.common import KP_Common
 common = KP_Common( )
 
-# get the python version.    This will only work with v3.6+
+# get the python version. This will only work with v3.6+
 _py_ver = sys.version_info
 if _py_ver[0] < 3 and _py_ver[1] < 6:
     common.my_print( "info", ( "*" * 52 ) )
@@ -33,17 +33,8 @@ try:
     # fire up the argument parser
     _args = argparse.ArgumentParser( formatter_class=RawTextHelpFormatter, usage='''
 --------------------------------------------------------------------------------------
-\033[92mkp [setup|update|config|backup|restore|optimages|freem|scan]\033[37m \033[94m[additional arguments]\033[37m
+\033[92mkp [backup|restore|optimages|freem|scan|update]\033[37m \033[94m[additional arguments]\033[37m
 --------------------------------------------------------------------------------------
-\033[94msetup\033[37m:
-    \033[92m--setup\033[37m: [app|system]
-    Setup the app or system with additional apps or configurations
-\033[94mupdate\033[37m:
-    \033[92m--update\033[37m: [app|system|wordpress]
-        \033[94mif wordpress\033[37m: \033[92m--include_plugins\033[37m
-    Update the app, system, or wordpress
-\033[94mconfig\033[37m:
-    FOLLOW THE PROMPTS
 \033[94mbackup\033[37m:
     \033[92m--backup\033[37m: [account|acct|application|app|database|db|other|all]
     Backup an account, an application, a database, or any other path(s)
@@ -62,6 +53,10 @@ try:
         \033[92m--auto_clean\033[37m
     Scan an account, an application, or any other path(s) for malware or virii
     \033[94mALL\033[37m will scan all accounts and apps as configured by your app configuration
+\033[94mupdate\033[37m:
+    \033[92m--update\033[37m: [wordpress]
+        \033[94mif wordpress\033[37m: \033[92m--include_plugins\033[37m
+    Update wordpress installations
 \033[94mSEMI-GLOBAL\033[37m:
     \033[92m--paths\033[37m: Command-delimited string of paths
         \033[94mNOTE\033[37m: only available for backup, optimizing images, or scanning
@@ -75,13 +70,10 @@ try:
 Please see the readme for more info''', add_help=False, allow_abbrev=False )
 
     # our action argument
-    _args.add_argument( "action", choices=[ "setup", "update", "config", "backup", "restore", 'optimages', 'freem', 'scan' ], help=argparse.SUPPRESS )
-
-    # setup what?
-    _args.add_argument( "--setup", choices=[ "app", "system" ], help=argparse.SUPPRESS )
+    _args.add_argument( "action", choices=[ "backup", "restore", 'optimages', 'freem', 'scan', 'update' ], help=argparse.SUPPRESS )
 
     # update what?
-    _args.add_argument( "--update", choices=[ "app", "system", "wordpress" ], help=argparse.SUPPRESS )
+    _args.add_argument( "--update", choices=[ "wordpress" ], help=argparse.SUPPRESS )
     
     # include plugins for wordpress update?
     _args.add_argument( "--include_plugins", action='store_true', help=argparse.SUPPRESS )

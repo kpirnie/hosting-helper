@@ -1,0 +1,64 @@
+services:
+  wmh-helper:
+    image: ghcr.io/kpirnie/wmh-hosting:latest
+
+    # Environment variables for configuration
+    environment:
+      # S3 Configuration
+      - KP_S3_KEY=${S3_KEY}
+      - KP_S3_SECRET=${S3_SECRET}
+      - KP_S3_ENDPOINT=${S3_ENDPOINT:-s3.amazonaws.com}
+      - KP_S3_BUCKET=${S3_BUCKET}
+      - KP_S3_REGION=${S3_REGION:-us-east-1}
+
+      # Backup Configuration
+      - RESTIC_PASSWORD=${RESTIC_PASSWORD}
+      - KP_RETENTION_DAYS=${RETENTION_DAYS:-30}
+      - KP_BACKUP_NAME=${BACKUP_NAME:-}
+
+      # Path Configuration
+      - KP_PATH_START=${PATH_START:-/home/}
+      - KP_PATH_FOR_APPS=${PATH_FOR_APPS:-webapps}
+
+      # MySQL Configuration
+      - KP_MYSQL_HOST=${MYSQL_HOST:-localhost}
+      - KP_MYSQL_DEFAULTS=${MYSQL_DEFAULTS:-}
+      - KP_MYSQL_USER=${MYSQL_USER:-}
+      - KP_MYSQL_PASSWORD=${MYSQL_PASSWORD:-}
+
+      # Force config regeneration on each start
+      - FORCE_CONFIG_REGEN=${FORCE_CONFIG_REGEN:-false}
+
+    # Volumes - mount host paths for backup
+    volumes:
+      # Mount the paths you want to backup
+      - /home:/home:ro
+      - /etc/mysql:/etc/mysql:ro
+
+      # Persistent storage for config (optional)
+      - kp-config:/root
+
+      # Temporary restore location
+      - kp-restore:/tmp/restore
+
+    # Network mode to access MySQL on host
+    network_mode: "host"
+
+    # Restart policy
+    restart: unless-stopped
+
+    # Run as root (required for system operations)
+    user: root
+
+    # Keep container running for cron jobs
+    command: backup --backup all
+    # Or use this to run interactively:
+    # stdin_open: true
+    # tty: true
+    # command: /bin/bash
+
+volumes:
+  wmh-config:
+    driver: local
+  wmh-restore:
+    driver: local
