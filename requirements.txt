@@ -1,2 +1,11 @@
 pip
 pyinstaller
+boto3
+botocore
+s3transfer
+pymysql
+python-dateutil
+simple-term-menu
+requests
+urllib3
+psutil
