@@ -40,6 +40,10 @@ a = Analysis(
     datas=[],
     hiddenimports=[
         'boto3',
+        'botocore',
+        'botocore.session',
+        'botocore.client',
+        's3transfer',
         'pymysql',
         'apt',
         'psutil',
@@ -133,3 +137,4 @@ echo "1. This binary still requires system tools: mariadb/mysql, restic, etc."
 echo "2. For maximum compatibility, install these packages on target systems:"
 echo "   apt-get install mariadb-client restic optipng jpegoptim gifsicle webp"
 echo "3. Or create a Docker container for true portability"
+
