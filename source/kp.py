@@ -31,9 +31,10 @@ if is_su != 0:
 try:
 
     # fire up the argument parser
+    # Updated usage to include mount action with all options
     _args = argparse.ArgumentParser( formatter_class=RawTextHelpFormatter, usage='''
 --------------------------------------------------------------------------------------
-\033[92mkp [backup|restore|optimages|freem|scan|update]\033[37m \033[94m[additional arguments]\033[37m
+\033[92mkp [backup|restore|mount|optimages|freem|scan|update]\033[37m \033[94m[additional arguments]\033[37m
 --------------------------------------------------------------------------------------
 \033[94mbackup\033[37m:
     \033[92m--backup\033[37m: [account|acct|application|app|database|db|other|all]
@@ -41,6 +42,15 @@ try:
     \033[94mALL\033[37m will backup all accounts, apps, and databases as configured by your app configuration
 \033[94mrestore\033[37m:
     FOLLOW THE PROMPTS
+\033[94mmount\033[37m:
+    \033[92m--source\033[37m: [optional] S3 path or relative path to mount
+    \033[92m--destination\033[37m: [optional] Local path where to mount the backup
+    \033[92m--unmount\033[37m: Path to unmount
+    \033[92m--list\033[37m: List all active mounts
+    \033[92m--foreground\033[37m: Run mount in foreground (blocks until CTRL-C)
+    Mount a backup repository to a local directory for browsing
+    Default behavior: Mounts in background, requires manual unmount
+    If no arguments provided, interactive menu will guide you
 \033[94moptimages\033[37m:
     \033[92m--optimize\033[37m: [account|acct|application|app|other|all]
     Optimize images for an account, an application, a database, or any other path(s)
@@ -69,8 +79,15 @@ try:
 --------------------------------------------------------------------------------------
 Please see the readme for more info''', add_help=False, allow_abbrev=False )
 
-    # our action argument
-    _args.add_argument( "action", choices=[ "backup", "restore", 'optimages', 'freem', 'scan', 'update' ], help=argparse.SUPPRESS )
+    # our action argument - added 'mount' to choices
+    _args.add_argument( "action", choices=[ "backup", "restore", "mount", 'optimages', 'freem', 'scan', 'update' ], help=argparse.SUPPRESS )
+
+    # mount-specific arguments
+    _args.add_argument( "--source", help=argparse.SUPPRESS )  # source path to mount
+    _args.add_argument( "--destination", help=argparse.SUPPRESS )  # destination mount point
+    _args.add_argument( "--unmount", help=argparse.SUPPRESS )  # path to unmount
+    _args.add_argument( "--list", "--list-mounts", dest="list_mounts", action='store_true', help=argparse.SUPPRESS )  # list active mounts
+    _args.add_argument( "--foreground", action='store_true', help=argparse.SUPPRESS )  # run in foreground mode
 
     # update what?
     _args.add_argument( "--update", choices=[ "wordpress" ], help=argparse.SUPPRESS )

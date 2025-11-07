@@ -28,7 +28,7 @@ CODEPATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )";
 mkdir -p $CODEPATH/release;
 
 # Create a more portable spec file
-cat > $CODEPATH/kp-portable.spec << 'EOF'
+cat > $CODEPATH/kp.spec << 'EOF'
 # -*- mode: python ; coding: utf-8 -*-
 
 block_cipher = None
@@ -70,6 +70,7 @@ a = Analysis(
         'work.common.menu',
         'work.config.config',
         'work.freem.freem',
+        'work.mount.mount',
         'work.optimages.optimages',
         'work.restore.restore',
         'work.scan.scan',
@@ -100,7 +101,7 @@ exe = EXE(
     a.zipfiles,
     a.datas,
     [],
-    name='kp-portable',
+    name='kp',
     debug=False,
     bootloader_ignore_signals=False,
     strip=True,
@@ -117,7 +118,7 @@ exe = EXE(
 EOF
 
 # Use the spec file for compilation
-pyinstaller --distpath $CODEPATH/release/ --clean $CODEPATH/kp-portable.spec
+pyinstaller --distpath $CODEPATH/release/ --clean $CODEPATH/kp.spec
 
 # find and remove the PYC files
 find . -type f -name "*.pyc" -exec rm -f {} \;
@@ -125,16 +126,15 @@ find . -type d -name "__pycache*" -exec rm -rf {} \;
 
 # remove the build directory
 rm -rf $CODEPATH/build
-rm -f $CODEPATH/kp-portable.spec
+rm -f $CODEPATH/kp.spec
 
 # set the executable bit
-chmod +x $CODEPATH/release/kp-portable
+chmod +x $CODEPATH/release/kp
 
-echo "Binary compiled as: kp-portable"
+echo "Binary compiled as: kp"
 echo ""
 echo "IMPORTANT NOTES:"
 echo "1. This binary still requires system tools: mariadb/mysql, restic, etc."
 echo "2. For maximum compatibility, install these packages on target systems:"
 echo "   apt-get install mariadb-client restic optipng jpegoptim gifsicle webp"
 echo "3. Or create a Docker container for true portability"
-
