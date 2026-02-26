@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # common imports
-import json, boto3, os, sys, time
+import json, os, sys, time
 from datetime import datetime as dt
 import dateutil.parser
 
@@ -19,6 +19,16 @@ class KP_Menu:
 
         # let's set the class to a class wide variable so we can use it later on if we need
         self.common = KP_Common( )
+
+        # single shared boto3 client, credentials passed directly not from env
+        import boto3
+        self.s3 = boto3.client(
+            "s3",
+            endpoint_url="https://{}".format( self.common.endpoint ),
+            aws_access_key_id=self.common.key,
+            aws_secret_access_key=self.common.secret,
+            region_name=self.common.region
+        )
 
     # destroyer!
     def __del__( self ):
@@ -60,17 +70,11 @@ class KP_Menu:
     # generate the database menu
     def database_menu( self ):
 
-        # first we need to select an account
-        _s3 = boto3.client( "s3", endpoint_url="https://{}".format( self.common.endpoint ) )
-
         # check the bucket and path for the selected backup type
-        _acct_resp = _s3.list_objects_v2(
+        _acct_resp = self.s3.list_objects_v2(
                 Bucket=self.common.bucket,
                 Prefix ='{}/{}'.format( self.common.name, "database/" ),
                 Delimiter="/" )
-
-        # we don't need the client anymore
-        del _s3
 
         # the returned account list
         _database_list = [ os.path.basename( os.path.dirname( i["Prefix"] ) ) for i in _acct_resp.get( 'CommonPrefixes', [] ) ]
@@ -81,17 +85,11 @@ class KP_Menu:
     # generate the application menu
     def app_menu( self ):
 
-        # first we need to select an account
-        _s3 = boto3.client( "s3", endpoint_url="https://{}".format( self.common.endpoint ) )
-
         # check the bucket and path for the selected backup type
-        _acct_resp = _s3.list_objects_v2(
+        _acct_resp = self.s3.list_objects_v2(
                 Bucket=self.common.bucket,
                 Prefix ='{}/{}'.format( self.common.name, "apps/" ),
                 Delimiter="/" )
-
-        # we don't need the client anymore
-        del _s3
 
         # the returned account list
         _acct_list = [ os.path.basename( os.path.dirname( i["Prefix"] ) ) for i in _acct_resp.get( 'CommonPrefixes', [] ) ]
@@ -99,17 +97,11 @@ class KP_Menu:
         # get the selected account
         _selected_account = self.__menu( _acct_list, "Select the account to restore:" )
 
-        # now that we have the account, select the application
-        _s3 = boto3.client( "s3", endpoint_url="https://{}".format( self.common.endpoint ) )
-
         # get the response for the app to be selected
-        _app_resp = _s3.list_objects_v2(
+        _app_resp = self.s3.list_objects_v2(
             Bucket=self.common.bucket,
             Prefix='{}/{}{}/'.format( self.common.name, "apps/", _selected_account ),
             Delimiter="/" )
-
-        # we don't need the client anymore
-        del _s3
 
         # build out a list of the accounts we're after here
         _app_list = [ os.path.basename( os.path.dirname( i["Prefix"] ) ) for i in _app_resp.get( 'CommonPrefixes', [] ) ]
