@@ -19,7 +19,7 @@ apt-get update
 apt-get install -y zip python3-dev python3-pip build-essential binutils patchelf
 
 # let's make sure pip is up to date
-python3 -m pip install --upgrade -r requirements.txt --break-system-packages
+python3 -m pip install --upgrade --ignore-installed -r requirements.txt --break-system-packages
 
 # get the path to this script
 CODEPATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )";

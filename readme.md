@@ -1,58 +1,42 @@
-# KP Hosting Helper App <a name="top"></a>
+# KP Hosting Helper <a name="top"></a>
 
-[Requirements](#requirements) | [Description](#description) | [Quick Start](#quick-start) | [Installation](#installation) | [Configuration](#configuration) | [Commands](#commands) | [Usage](#usage)
+[![Build and Push Docker Image](https://github.com/kpirnie/hosting-helper/actions/workflows/docker-build.yml/badge.svg)](https://github.com/kpirnie/hosting-helper/actions/workflows/docker-build.yml)
+[![License: MIT](https://img.shields.io/github/license/kpirnie/hosting-helper)](https://github.com/kpirnie/hosting-helper/blob/main/LICENSE)
+[![Last Commit](https://img.shields.io/github/last-commit/kpirnie/hosting-helper)](https://github.com/kpirnie/hosting-helper/commits/main)
+[![GitHub Issues](https://img.shields.io/github/issues/kpirnie/hosting-helper)](https://github.com/kpirnie/hosting-helper/issues)
+[![Image Size](https://ghcr-badge.egpl.dev/kpirnie/wmh-helper/size?tag=latest&label=image%20size)](https://github.com/kpirnie/hosting-helper/pkgs/container/wmh-helper)
+[![Kevin Pirnie](https://img.shields.io/badge/Kevin%20Pirnie-.com-blue)](https://kevinpirnie.com/)
 
-A containerized Python 3 application for managing web server backup, restore, optimization, and security operations.
+[Requirements](#requirements) | [Quick Start](#quick-start) | [Configuration](#configuration) | [Commands](#commands) | [Usage](#usage)
+
+A containerized Python 3 application for managing web server backup, restore, optimization, and security operations. This is a Docker-only application — all operations run inside the container.
+
+---
 
 ## Requirements <a name="requirements"></a>
 
-[Requirements](#requirements) | [Description](#description) | [Quick Start](#quick-start) | [Installation](#installation) | [Configuration](#configuration) | [Commands](#commands) | [Usage](#usage)
+[Requirements](#requirements) | [Quick Start](#quick-start) | [Configuration](#configuration) | [Commands](#commands) | [Usage](#usage)
 
-**Container Runtime**
 - Docker or Podman
 - Docker Compose or Podman Compose
 
-**Or for bare-metal installation:**
-- Ubuntu 18.04, 20.04, or 22.04
-- Python 3.6+
-- CLI and Shell Access
-
 [Back To Top](#top)
 
-## Description <a name="description"></a>
-
-[Requirements](#requirements) | [Description](#description) | [Quick Start](#quick-start) | [Installation](#installation) | [Configuration](#configuration) | [Commands](#commands) | [Usage](#usage)
-
-A containerized application for managing web server operations including:
-
-- **Backup & Restore**: Automated backups to S3-compatible storage with encryption
-- **Image Optimization**: Compress JPG, PNG, GIF, WebP, and SVG images
-- **Security Scanning**: Malware and virus scanning with maldet
-- **WordPress Management**: Automated WordPress core and plugin updates with rollback
-- **System Utilities**: Memory optimization and cache management
-
-All operations are fully containerized and configured via environment variables.
-
-[Back To Top](#top)
+---
 
 ## Quick Start <a name="quick-start"></a>
 
-[Requirements](#requirements) | [Description](#description) | [Quick Start](#quick-start) | [Installation](#installation) | [Configuration](#configuration) | [Commands](#commands) | [Usage](#usage)
-
-### Using Pre-built Image from GitHub Container Registry
+[Requirements](#requirements) | [Quick Start](#quick-start) | [Configuration](#configuration) | [Commands](#commands) | [Usage](#usage)
 
 ```bash
 # Pull the latest image
 docker pull ghcr.io/kpirnie/wmh-helper:latest
 
-# Or with Podman
-podman pull ghcr.io/kpirnie/wmh-helper:latest
-
-# Create .env file
+# Create your environment file
 cat > .env << EOF
-S3_KEY=your_s3_key
-S3_SECRET=your_s3_secret
-S3_BUCKET=your_bucket_name
+KP_S3_KEY=your_s3_key
+KP_S3_SECRET=your_s3_secret
+KP_S3_BUCKET=your_bucket_name
 RESTIC_PASSWORD=your_encryption_password
 EOF
 
@@ -66,154 +50,109 @@ docker run --rm \
 
 [Back To Top](#top)
 
-## Installation <a name="installation"></a>
-
-[Requirements](#requirements) | [Description](#description) | [Quick Start](#quick-start) | [Installation](#installation) | [Configuration](#configuration) | [Commands](#commands) | [Usage](#usage)
-
-### Option 1: Use Pre-built Image (Recommended)
-
-The easiest way is to use the pre-built image from GitHub Container Registry:
-
-```bash
-# Pull the image
-docker pull ghcr.io/kpirnie/wmh-helper:latest
-
-# Or with Podman
-podman pull ghcr.io/kpirnie/wmh-helper:latest
-```
-
-### Option 2: Build from Source
-
-Clone the repository and build locally:
-
-```bash
-# Clone the repository
-git clone https://github.com/kpirnie/hosting-helper.git
-cd hosting-helper
-
-# Build with Docker
-docker build -t kp-hosting-helper:latest .
-
-# Or build with Podman
-podman build -t kp-hosting-helper:latest .
-
-# Or use docker-compose/podman-compose
-docker-compose build
-```
-
-### Option 3: Automated Builds
-
-GitHub Actions automatically builds and publishes new images on every push to `main`. Images are tagged as:
-- `ghcr.io/kpirnie/wmh-helper:latest` - Latest build
-- `ghcr.io/kpirnie/wmh-helper:<commit-sha>` - Specific commit
-
-[Back To Top](#top)
+---
 
 ## Configuration <a name="configuration"></a>
 
-[Requirements](#requirements) | [Description](#description) | [Quick Start](#quick-start) | [Installation](#installation) | [Configuration](#configuration) | [Commands](#commands) | [Usage](#usage)
+[Requirements](#requirements) | [Quick Start](#quick-start) | [Configuration](#configuration) | [Commands](#commands) | [Usage](#usage)
 
-All configuration is done via environment variables. No manual config files needed!
-
-### Create Environment File
-
-```bash
-# Copy the example file
-cp .env.example .env
-
-# Edit with your settings
-nano .env
-```
+All configuration is handled via environment variables passed to the container. No manual config files are needed.
 
 ### Environment Variables
 
-#### S3 Storage Configuration (Required for Backup/Restore)
+#### S3 Storage (Required for Backup/Restore)
 
-- **`S3_KEY`** - Your S3 API Key
-- **`S3_SECRET`** - Your S3 API Secret
-- **`S3_ENDPOINT`** - S3 endpoint (default: `s3.amazonaws.com`)
-- **`S3_BUCKET`** - S3 bucket name for backups
-- **`S3_REGION`** - S3 region (default: `us-east-1`)
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `KP_S3_KEY` | S3 API Key | |
+| `KP_S3_SECRET` | S3 API Secret | |
+| `KP_S3_ENDPOINT` | S3 endpoint | `s3.amazonaws.com` |
+| `KP_S3_BUCKET` | S3 bucket name | |
+| `KP_S3_REGION` | S3 region | `us-east-1` |
 
-#### Backup Configuration
+#### Backup
 
-- **`RESTIC_PASSWORD`** - Encryption password for backups (auto-generated if not provided)
-- **`RETENTION_DAYS`** - Days to retain backups (default: `30`)
-- **`BACKUP_NAME`** - Name for this backup set (default: hostname)
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `RESTIC_PASSWORD` | Encryption password (auto-generated if not set) | |
+| `KP_RETENTION_DAYS` | Days to retain backups | `30` |
+| `KP_BACKUP_NAME` | Name for this backup set | hostname |
 
-#### Path Configuration
+#### Paths
 
-- **`PATH_START`** - Starting path for user homes (default: `/home/`)
-- **`PATH_FOR_APPS`** - Application directory name (default: `webapps`)
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `KP_PATH_START` | Starting path for user homes | `/home/` |
+| `KP_PATH_FOR_APPS` | Application directory name | `webapps` |
 
-#### MySQL/MariaDB Configuration
+#### MySQL/MariaDB
 
-- **`MYSQL_HOST`** - MySQL host (default: `localhost`)
-- **`MYSQL_DEFAULTS`** - Path to MySQL defaults file (e.g., `/etc/mysql/debian.cnf`)
-- **`MYSQL_USER`** - MySQL admin username (if not using defaults file)
-- **`MYSQL_PASSWORD`** - MySQL admin password (if not using defaults file)
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `KP_MYSQL_HOST` | MySQL host | `localhost` |
+| `KP_MYSQL_DEFAULTS` | Path to MySQL defaults file | |
+| `KP_MYSQL_USER` | MySQL admin username | |
+| `KP_MYSQL_PASSWORD` | MySQL admin password | |
 
-#### Example .env File
+### Example .env File
 
 ```bash
 # S3 Configuration
-S3_KEY=AKIAIOSFODNN7EXAMPLE
-S3_SECRET=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
-S3_ENDPOINT=s3.amazonaws.com
-S3_BUCKET=my-backup-bucket
-S3_REGION=us-east-1
+KP_S3_KEY=AKIAIOSFODNN7EXAMPLE
+KP_S3_SECRET=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+KP_S3_ENDPOINT=s3.amazonaws.com
+KP_S3_BUCKET=my-backup-bucket
+KP_S3_REGION=us-east-1
 
 # Backup Configuration
 RESTIC_PASSWORD=my-super-secret-encryption-password
-RETENTION_DAYS=30
-BACKUP_NAME=webserver-01
+KP_RETENTION_DAYS=30
+KP_BACKUP_NAME=webserver-01
 
 # Path Configuration
-PATH_START=/home/
-PATH_FOR_APPS=webapps
+KP_PATH_START=/home/
+KP_PATH_FOR_APPS=webapps
 
 # MySQL Configuration
-MYSQL_HOST=localhost
-MYSQL_DEFAULTS=/etc/mysql/debian.cnf
+KP_MYSQL_HOST=localhost
+KP_MYSQL_DEFAULTS=/etc/mysql/debian.cnf
 ```
 
 [Back To Top](#top)
 
+---
+
 ## Commands <a name="commands"></a>
 
-[Requirements](#requirements) | [Description](#description) | [Quick Start](#quick-start) | [Installation](#installation) | [Configuration](#configuration) | [Commands](#commands) | [Usage](#usage)
+[Requirements](#requirements) | [Quick Start](#quick-start) | [Configuration](#configuration) | [Commands](#commands) | [Usage](#usage)
 
-All commands are run via Docker/Podman. The general format is:
+All commands follow this format:
 
 ```bash
 docker run --rm --env-file .env [volumes] ghcr.io/kpirnie/wmh-helper:latest [command] [arguments]
 ```
 
-### Backup
+### backup
 
-**Command:** `backup`
+Backs up accounts, applications, databases, or custom paths to S3-compatible storage.
 
-**Required Arguments:** `--backup account|acct|application|app|database|db|other|all`
-
-**Description:** Backup accounts, applications, databases, or custom paths to S3-compatible storage.
-
-**Examples:**
+**Required:** `--backup account|acct|application|app|database|db|other|all`
 
 ```bash
-# Backup everything (all databases and web applications)
+# Backup everything
 docker run --rm --env-file .env \
   -v /home:/home:ro \
   -v /etc/mysql:/etc/mysql:ro \
   --network host \
   ghcr.io/kpirnie/wmh-helper:latest backup --backup all
 
-# Backup specific application
+# Backup a specific application
 docker run --rm --env-file .env \
   -v /home:/home:ro \
   --network host \
   ghcr.io/kpirnie/wmh-helper:latest backup --backup app --account myuser --app mysite
 
-# Backup specific database
+# Backup a specific database
 docker run --rm --env-file .env \
   -v /etc/mysql:/etc/mysql:ro \
   --network host \
@@ -226,13 +165,9 @@ docker run --rm --env-file .env \
   ghcr.io/kpirnie/wmh-helper:latest backup --backup other --paths /etc/nginx,/var/www
 ```
 
-### Restore
+### restore
 
-**Command:** `restore`
-
-**Description:** Interactive restore wizard that guides you through restoring backups.
-
-**Example:**
+Interactive restore wizard that guides you through restoring from backup.
 
 ```bash
 docker run --rm -it --env-file .env \
@@ -242,15 +177,39 @@ docker run --rm -it --env-file .env \
   ghcr.io/kpirnie/wmh-helper:latest restore
 ```
 
-### Image Optimization
+### mount
 
-**Command:** `optimages`
+Mounts a backup repository to a local directory for browsing. Runs in background by default.
 
-**Required Arguments:** `--optimize account|acct|application|app|other|all`
+**Optional flags:** `--source`, `--destination`, `--unmount`, `--list`, `--foreground`
 
-**Description:** Optimize images (PNG, JPG, GIF, WebP, SVG) to reduce file sizes.
+```bash
+# Interactive mount (menu-driven)
+docker run --rm -it --env-file .env \
+  -v /tmp/backup-mount:/tmp/backup-mount \
+  ghcr.io/kpirnie/wmh-helper:latest mount
 
-**Examples:**
+# Mount a specific repo directly
+docker run --rm --env-file .env \
+  -v /tmp/backup-mount:/tmp/backup-mount \
+  ghcr.io/kpirnie/wmh-helper:latest mount \
+  --source apps/myuser/mysite \
+  --destination /tmp/backup-mount
+
+# Unmount
+docker run --rm --env-file .env \
+  ghcr.io/kpirnie/wmh-helper:latest mount --unmount /tmp/backup-mount
+
+# List active mounts
+docker run --rm --env-file .env \
+  ghcr.io/kpirnie/wmh-helper:latest mount --list
+```
+
+### optimages
+
+Optimizes PNG, JPG, GIF, WebP, and SVG images to reduce file sizes.
+
+**Required:** `--optimize account|acct|application|app|other|all`
 
 ```bash
 # Optimize all images
@@ -258,7 +217,7 @@ docker run --rm --env-file .env \
   -v /home:/home \
   ghcr.io/kpirnie/wmh-helper:latest optimages --optimize all
 
-# Optimize specific application
+# Optimize a specific application
 docker run --rm --env-file .env \
   -v /home:/home \
   ghcr.io/kpirnie/wmh-helper:latest optimages --optimize app --account myuser --app mysite
@@ -269,17 +228,13 @@ docker run --rm --env-file .env \
   ghcr.io/kpirnie/wmh-helper:latest optimages --optimize other --paths /var/www/images
 ```
 
-### Malware Scanning
+### scan
 
-**Command:** `scan`
+Scans for malware and viruses using maldet.
 
-**Required Arguments:** `--scan account|acct|application|app|other|all`
+**Required:** `--scan account|acct|application|app|other|all`
 
-**Optional Flags:**
-- `--auto_quarantine` - Automatically quarantine detected threats
-- `--auto_clean` - Automatically clean detected threats
-
-**Examples:**
+**Optional:** `--auto_quarantine`, `--auto_clean`
 
 ```bash
 # Scan everything
@@ -292,45 +247,15 @@ docker run --rm --env-file .env \
   -v /home:/home \
   ghcr.io/kpirnie/wmh-helper:latest scan --scan all --auto_quarantine
 
-# Scan specific application
+# Scan a specific application
 docker run --rm --env-file .env \
   -v /home:/home:ro \
   ghcr.io/kpirnie/wmh-helper:latest scan --scan app --account myuser --app mysite
 ```
 
-### WordPress Updates
+### freem
 
-**Command:** `update`
-
-**Required Arguments:** `--update wordpress`
-
-**Optional Flags:** `--include_plugins`
-
-**Description:** Update WordPress core (and plugins if flag is set) with automatic backup and rollback on failure.
-
-**Examples:**
-
-```bash
-# Update WordPress core only
-docker run --rm --env-file .env \
-  -v /home:/home \
-  --network host \
-  ghcr.io/kpirnie/wmh-helper:latest update --update wordpress
-
-# Update WordPress core and plugins
-docker run --rm --env-file .env \
-  -v /home:/home \
-  --network host \
-  ghcr.io/kpirnie/wmh-helper:latest update --update wordpress --include_plugins
-```
-
-### Free Memory
-
-**Command:** `freem`
-
-**Description:** Clear system caches and free unused memory.
-
-**Example:**
+Clears system caches and frees unused memory.
 
 ```bash
 docker run --rm --privileged \
@@ -339,21 +264,18 @@ docker run --rm --privileged \
 
 [Back To Top](#top)
 
+---
+
 ## Usage <a name="usage"></a>
 
-[Requirements](#requirements) | [Description](#description) | [Quick Start](#quick-start) | [Installation](#installation) | [Configuration](#configuration) | [Commands](#commands) | [Usage](#usage)
+[Requirements](#requirements) | [Quick Start](#quick-start) | [Configuration](#configuration) | [Commands](#commands) | [Usage](#usage)
 
-### Using Docker Compose
-
-Create a `docker-compose.yml` file:
+### Docker Compose
 
 ```yaml
-version: '3.8'
-
 services:
   kp-helper:
     image: ghcr.io/kpirnie/wmh-helper:latest
-    container_name: kp-hosting-helper
     env_file: .env
     volumes:
       - /home:/home:ro
@@ -367,25 +289,15 @@ volumes:
   kp-restore:
 ```
 
-Run commands:
-
 ```bash
-# Backup everything
-docker-compose run --rm kp-helper backup --backup all
-
-# Restore interactively
-docker-compose run --rm kp-helper restore
-
-# Optimize images
-docker-compose run --rm kp-helper optimages --optimize all
-
-# Scan for malware
-docker-compose run --rm kp-helper scan --scan all
+# Run any command via compose
+docker compose run --rm kp-helper backup --backup all
+docker compose run --rm kp-helper restore
+docker compose run --rm kp-helper optimages --optimize all
+docker compose run --rm kp-helper scan --scan all
 ```
 
-### Automated Backups with Cron
-
-Create a systemd service and timer:
+### Automated Backups via systemd
 
 **`/etc/systemd/system/kp-backup.service`:**
 
@@ -403,9 +315,6 @@ ExecStart=/usr/bin/docker run --rm \
   -v /etc/mysql:/etc/mysql:ro \
   --network host \
   ghcr.io/kpirnie/wmh-helper:latest backup --backup all
-
-[Install]
-WantedBy=multi-user.target
 ```
 
 **`/etc/systemd/system/kp-backup.timer`:**
@@ -422,117 +331,96 @@ Persistent=true
 WantedBy=timers.target
 ```
 
-Enable and start:
-
 ```bash
 sudo systemctl daemon-reload
-sudo systemctl enable kp-backup.timer
-sudo systemctl start kp-backup.timer
-
-# Check status
+sudo systemctl enable --now kp-backup.timer
 sudo systemctl status kp-backup.timer
-sudo systemctl list-timers
 ```
 
-### Automated Backups with Cron (Traditional)
+### Automated Backups via Cron
 
 ```bash
-# Edit crontab
-crontab -e
-
-# Add daily backup at 2 AM
-0 2 * * * /usr/bin/docker run --rm --env-file /opt/kp-helper/.env -v /home:/home:ro -v /etc/mysql:/etc/mysql:ro --network host ghcr.io/kpirnie/wmh-helper:latest backup --backup all >> /var/log/kp-backup.log 2>&1
+0 2 * * * /usr/bin/docker run --rm \
+  --env-file /opt/kp-helper/.env \
+  -v /home:/home:ro \
+  -v /etc/mysql:/etc/mysql:ro \
+  --network host \
+  ghcr.io/kpirnie/wmh-helper:latest backup --backup all >> /var/log/kp-backup.log 2>&1
 ```
 
-### Volume Mounts
-
-Common volume mount patterns:
+### Volume Mount Reference
 
 ```bash
-# Read-only mounts for backups (recommended)
+# Read-only (backups, scans)
 -v /home:/home:ro
 -v /etc/mysql:/etc/mysql:ro
 
-# Read-write for operations that modify files
--v /home:/home                    # Image optimization, WordPress updates
--v /tmp/restore:/tmp/restore      # Restore operations
-
-# Mount specific paths
--v /home/user1:/home/user1:ro     # Single user
--v /var/www:/var/www:ro           # Web root
+# Read-write (image optimization, restore)
+-v /home:/home
+-v /tmp/restore:/tmp/restore
 ```
 
 ### Network Modes
 
 ```bash
-# Host network (for MySQL access on localhost)
+# Host networking — required when MySQL is on localhost
 --network host
 
-# Bridge network with custom MySQL host
---network bridge -e MYSQL_HOST=mysql.example.com
+# Bridge networking — use when MySQL is on a remote host
+--network bridge -e KP_MYSQL_HOST=mysql.example.com
 ```
 
-### Security Considerations
+### Security
 
-1. **Protect your .env file:**
-   ```bash
-   chmod 600 .env
-   ```
+```bash
+# Protect your .env file
+chmod 600 .env
 
-2. **Use read-only mounts when possible:**
-   ```bash
-   -v /home:/home:ro  # :ro = read-only
-   ```
+# Store it outside web roots
+/opt/kp-helper/.env   # correct
+/var/www/.env         # wrong
+```
 
-3. **Store .env outside web root:**
-   ```bash
-   /opt/kp-helper/.env  # Good
-   /var/www/.env        # Bad
-   ```
+### Building from Source
 
-4. **Use secrets management for production:**
-   - Docker Secrets
-   - Kubernetes Secrets
-   - HashiCorp Vault
+```bash
+git clone https://github.com/kpirnie/hosting-helper.git
+cd hosting-helper
+
+docker build -t kp-hosting-helper:latest .
+# or
+podman build -t kp-hosting-helper:latest .
+```
+
+Images are automatically built and published to `ghcr.io/kpirnie/wmh-helper` on every push to `main`, tagged as both `:latest` and `:<commit-sha>`.
 
 ### Troubleshooting
 
-**View container logs:**
 ```bash
+# View logs
 docker logs kp-hosting-helper
-```
 
-**Run interactively for debugging:**
-```bash
+# Drop into the container for debugging
 docker run --rm -it --env-file .env \
   -v /home:/home \
   --network host \
   --entrypoint /bin/bash \
   ghcr.io/kpirnie/wmh-helper:latest
-```
 
-**Test configuration:**
-```bash
-docker run --rm --env-file .env \
-  ghcr.io/kpirnie/wmh-helper:latest backup --help
-```
-
-**Update to latest image:**
-```bash
+# Pull latest image
 docker pull ghcr.io/kpirnie/wmh-helper:latest
 ```
 
 [Back To Top](#top)
 
+---
+
 ## License
 
-MIT License
-
-See [LICENSE](LICENSE) file for details.
+MIT License — see [LICENSE](LICENSE) for details.
 
 ## Support
 
-For issues, questions, or contributions, please visit:
 - GitHub: https://github.com/kpirnie/hosting-helper
 - Issues: https://github.com/kpirnie/hosting-helper/issues
 

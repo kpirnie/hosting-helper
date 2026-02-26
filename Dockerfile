@@ -1,31 +1,33 @@
 # Multi-stage Dockerfile for KP Hosting Helper
 
 # Stage 1: Base dependencies
-FROM python:3.11-slim as base
+FROM docker.io/library/python:3-alpine as base
 
-# Install system dependencies (only runtime tools needed)
-RUN apt-get update && apt-get install -y --no-install-recommends \
+# runtime dependencies
+RUN apk add --no-cache \
     curl \
     restic \
     optipng \
     jpegoptim \
     gifsicle \
-    webp \
-    default-mysql-client \
+    libwebp-tools \
     mariadb-client \
     inotify-tools \
     bash \
-    && rm -rf /var/lib/apt/lists/*
+    tar \
+    perl \
+    && mkdir -p /usr/local/sbin /etc/init.d
 
 # Stage 2: Python dependencies
-FROM python:3.11-slim as python-deps
+FROM docker.io/library/python:3-alpine as python-deps
 
 # Install build dependencies only in this stage
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN apk add --no-cache \
     gcc \
+    musl-dev \
     python3-dev \
-    default-libmysqlclient-dev \
-    && rm -rf /var/lib/apt/lists/*
+    mariadb-dev \
+    mariadb-connector-c-dev
 
 WORKDIR /build
 
@@ -66,10 +68,7 @@ RUN mkdir -p /usr/local/src && \
 RUN mkdir -p /tmp/restore /tmp/backup-mount
 
 # Environment variables with defaults (can be overridden)
-ENV AWS_ACCESS_KEY_ID="" \
-    AWS_SECRET_ACCESS_KEY="" \
-    AWS_DEFAULT_REGION="us-east-1" \
-    RESTIC_PASSWORD="" \
+ENV RESTIC_PASSWORD="" \
     KP_S3_KEY="" \
     KP_S3_SECRET="" \
     KP_S3_ENDPOINT="s3.amazonaws.com" \
