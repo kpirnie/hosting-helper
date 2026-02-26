@@ -101,6 +101,13 @@ class KP_Common:
         # format the primary command string, cleanup serverside caches
         self.primary_command = "restic --no-lock --cleanup-cache -r {}"
 
+        # set these here
+        import os
+        os.environ["AWS_ACCESS_KEY_ID"] = self.key or ""
+        os.environ["AWS_SECRET_ACCESS_KEY"] = self.secret or ""
+        os.environ["AWS_DEFAULT_REGION"] = self.region or ""
+        os.environ["RESTIC_PASSWORD"] = self.hash or ""
+    
     # run the actual backup
     def backup_run( self, _repo, _path ):
 
@@ -194,7 +201,7 @@ class KP_Common:
             return '"' + _path + '"'
 
     # execute a shell command
-    def execute( self, _cmd, _quiet = True ):
+    def execute( self, _cmd, _quiet = True, _env=None ):
 
         # import the subprocess module
         import subprocess
@@ -203,11 +210,11 @@ class KP_Common:
         if _quiet:
 
             # execute the command silently
-            subprocess.call( [ _cmd ], shell=True, stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL )
+            subprocess.call( [ _cmd ], shell=True, stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL, env=_env )
         else:
 
             # we do want the output
-            return subprocess.check_output( [ _cmd ], shell=True )
+            return subprocess.check_output( [ _cmd ], shell=True, env=_env )
 
     # our pretty printer ;)
     def my_print( self, _type, _str ):

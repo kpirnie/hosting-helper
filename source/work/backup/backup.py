@@ -41,12 +41,6 @@ class KP_Backup:
         # hold the paths argument if it was passed
         _paths = self.parsed_args.paths or None
 
-        # set some environment variables
-        os.environ["AWS_ACCESS_KEY_ID"] = self.common.key
-        os.environ["AWS_SECRET_ACCESS_KEY"] = self.common.secret
-        os.environ["AWS_DEFAULT_REGION"] = self.common.region
-        os.environ["RESTIC_PASSWORD"] = self.common.hash
-
         # if we are backing up everything!
         if self.parsed_args.backup.lower( ) == "all":
 
@@ -260,9 +254,3 @@ class KP_Backup:
                 self.common.my_print( "success", "Your backup has completed." )
                 self.common.my_print( "info", ( "*" * 52 ) )
                 sys.exit( )
-
-        # remove the environment variables
-        del os.environ['AWS_ACCESS_KEY_ID']
-        del os.environ['AWS_SECRET_ACCESS_KEY']
-        del os.environ['AWS_DEFAULT_REGION']
-        del os.environ['RESTIC_PASSWORD']

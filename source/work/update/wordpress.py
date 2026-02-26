@@ -208,12 +208,6 @@ class KP_Wordpress_Update:
 
     # backup the app and database
     def __backup( self, _acct, _app, _db ):
-
-        # set some environment variables
-        os.environ["AWS_ACCESS_KEY_ID"] = self.common.key
-        os.environ["AWS_SECRET_ACCESS_KEY"] = self.common.secret
-        os.environ["AWS_DEFAULT_REGION"] = self.common.region
-        os.environ["RESTIC_PASSWORD"] = self.common.hash
         
         # import the database backup
         from work.backup.database import KP_Backup_Database
@@ -239,20 +233,8 @@ class KP_Wordpress_Update:
         # clean up
         del _app_bu
 
-        # remove the environment variables
-        del os.environ['AWS_ACCESS_KEY_ID']
-        del os.environ['AWS_SECRET_ACCESS_KEY']
-        del os.environ['AWS_DEFAULT_REGION']
-        del os.environ['RESTIC_PASSWORD']
-
     # restore the app and database
     def __restore( self, account, application, database ):
-
-        # set some environment variables
-        os.environ["AWS_ACCESS_KEY_ID"] = self.common.key
-        os.environ["AWS_SECRET_ACCESS_KEY"] = self.common.secret
-        os.environ["AWS_DEFAULT_REGION"] = self.common.region
-        os.environ["RESTIC_PASSWORD"] = self.common.hash
 
         # setup the database repo path
         _db_repo = "{}{}/database/{}".format( "s3://{}/{}/".format( self.common.endpoint, self.common.bucket ), 
@@ -283,12 +265,6 @@ class KP_Wordpress_Update:
 
         # execute the app restore
         self.common.execute( _app_restore_cmd )
-
-        # remove the environment variables
-        del os.environ['AWS_ACCESS_KEY_ID']
-        del os.environ['AWS_SECRET_ACCESS_KEY']
-        del os.environ['AWS_DEFAULT_REGION']
-        del os.environ['RESTIC_PASSWORD']
 
     # format the mysql command
     def __mysql_command( self ):

@@ -112,12 +112,6 @@ class KP_Restore:
         # how do we want to restore the backup?
         _bu_method = _menu.restore_method_menu( )
 
-        # setup the common API environment variables
-        os.environ["AWS_ACCESS_KEY_ID"] = self.s3_key
-        os.environ["AWS_SECRET_ACCESS_KEY"] = self.s3_secret
-        os.environ["AWS_DEFAULT_REGION"] = self.s3_region
-        os.environ["RESTIC_PASSWORD"] = self.bu_hash
-
         # if the backup type is other
         if _bu_type.lower( ) == "other":
 
@@ -269,12 +263,6 @@ class KP_Restore:
             self.common.my_print( "info", ( "*" * 52 ) )
             self.common.my_print( "success", "Your selected backup has been succesfully restored." )
             self.common.my_print( "info", ( "*" * 52 ) )
-
-        # remove the environment variables
-        del os.environ['AWS_ACCESS_KEY_ID']
-        del os.environ['AWS_SECRET_ACCESS_KEY']
-        del os.environ['AWS_DEFAULT_REGION']
-        del os.environ['RESTIC_PASSWORD']
 
     # create the repo path string
     def __repo_path( self, _type, _account = None, _application = None ):

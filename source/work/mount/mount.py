@@ -42,12 +42,6 @@ class KP_Mount:
             self.__list_active_mounts( )
             return
 
-        # set environment variables for S3 access
-        os.environ["AWS_ACCESS_KEY_ID"] = self.common.key
-        os.environ["AWS_SECRET_ACCESS_KEY"] = self.common.secret
-        os.environ["AWS_DEFAULT_REGION"] = self.common.region
-        os.environ["RESTIC_PASSWORD"] = self.common.hash
-
         # check if we have CLI arguments for source and destination
         if self.parsed_args.source and self.parsed_args.destination:
             
@@ -140,9 +134,6 @@ class KP_Mount:
         else:
             # run in background mode (default)
             self.__mount_background( _repo_path, _mount_point )
-
-        # cleanup environment variables
-        self.__cleanup_env_vars( )
 
     # mount in foreground mode (blocks until CTRL-C)
     def __mount_foreground( self, repo_path, mount_point ):
@@ -349,16 +340,3 @@ class KP_Mount:
                 os.remove( _info_file )
             except:
                 pass
-
-    # cleanup environment variables
-    def __cleanup_env_vars( self ):
-        
-        # cleanup environment variables
-        if 'AWS_ACCESS_KEY_ID' in os.environ:
-            del os.environ['AWS_ACCESS_KEY_ID']
-        if 'AWS_SECRET_ACCESS_KEY' in os.environ:
-            del os.environ['AWS_SECRET_ACCESS_KEY']
-        if 'AWS_DEFAULT_REGION' in os.environ:
-            del os.environ['AWS_DEFAULT_REGION']
-        if 'RESTIC_PASSWORD' in os.environ:
-            del os.environ['RESTIC_PASSWORD']
