@@ -42,6 +42,9 @@ class KP_Optimages:
             self.common.my_print( "info", ( "*" * 52 ) )
             sys.exit( )
 
+        # one pool for the entire run, regardless of which path we're in
+        _t_pool = Pool( self.common.allowed_threads )
+
         # hold the paths argument if it was passed
         _paths = self.parsed_args.paths or None
 
@@ -56,7 +59,7 @@ class KP_Optimages:
             _path = "{}*/{}".format( self.common.path_start, self.common.path_for_apps )
 
             # process the images
-            self.__process_images( _path )
+            self.__process_images( _path, _t_pool )
 
             self.common.my_print( "info", ( "*" * 52 ) )
             self.common.my_print( "success", "Good to go." )
@@ -94,7 +97,7 @@ class KP_Optimages:
                 _path = "{}{}/{}".format( self.common.path_start, _acct, self.common.path_for_apps )
 
                 # process the images
-                self.__process_images( _path )
+                self.__process_images( _path, _t_pool )
 
                 self.common.my_print( "info", ( "*" * 52 ) )
                 self.common.my_print( "success", "Good to go." )
@@ -144,7 +147,7 @@ class KP_Optimages:
                 _path = "{}{}/{}/{}".format( self.common.path_start, _acct, self.common.path_for_apps, _app )
 
                 # process the images
-                self.__process_images( _path )
+                self.__process_images( _path, _t_pool )
 
                 self.common.my_print( "info", ( "*" * 52 ) )
                 self.common.my_print( "success", "Good to go." )
@@ -177,30 +180,21 @@ class KP_Optimages:
                 # get the paths we want to optimize
                 _the_paths = _paths.replace( " ", "" ).strip( ).split( "," )
 
-                # create our Threaded Pool
-                _t_pool = Pool( self.common.allowed_threads )
-
                 for p in _the_paths:
-
-                    # add the backup to the pool
-                    _t_pool.apply_async( self.__process_images, ( p, ) )
-
-                # close up access to the pool
-                _t_pool.close( )
-
-                # join the threads to be run
-                _t_pool.join( )
-
-                # clean up
-                del _t_pool
+                    self.__process_images( p, _t_pool )
 
                 # message
                 self.common.my_print( "info", ( "*" * 52 ) )
                 self.common.my_print( "success", "Good to go." )
                 self.common.my_print( "info", ( "*" * 52 ) )
 
+        # clean up the threadpool
+        _t_pool.close( )
+        _t_pool.join( )
+        del _t_pool
+
     # process the images
-    def __process_images( self, path ):
+    def __process_images( self, path, pool ):
 
         # set the full png list
         _full_png_list = glob.glob( "{}/**/*.png".format( path ), recursive = True )
@@ -220,53 +214,41 @@ class KP_Optimages:
         # set the full svg list
         _full_svg_list = glob.glob( "{}/**/*.svg".format( path ), recursive = True )
 
-        # create our Threaded Pool
-        _t_pool = Pool( self.common.allowed_threads )
-
         # png loop
         for p in _full_png_list:
 
             # add the backup to the pool
-            _t_pool.apply_async( self.__process_pngs, ( p, ) )
+            pool.apply_async( self.__process_pngs, ( p, ) )
 
         # jpg loop
         for p in _full_jpg_list:
 
             # add the backup to the pool
-            _t_pool.apply_async( self.__process_jpgs, ( p, ) )
+            pool.apply_async( self.__process_jpgs, ( p, ) )
 
         # jpeg loop
         for p in _full_jpeg_list:
 
             # add the backup to the pool
-            _t_pool.apply_async( self.__process_jpgs, ( p, ) )
+            pool.apply_async( self.__process_jpgs, ( p, ) )
 
         # gif loop
         for p in _full_gif_list:
 
             # add the backup to the pool
-            _t_pool.apply_async( self.__process_gifs, ( p, ) )
+            pool.apply_async( self.__process_gifs, ( p, ) )
 
         # webp loop
         for p in _full_webp_list:
 
             # add the backup to the pool
-            _t_pool.apply_async( self.__process_webps, ( p, ) )
+            pool.apply_async( self.__process_webps, ( p, ) )
 
         # svg loop
         for p in _full_svg_list:
 
             # add the backup to the pool
-            _t_pool.apply_async( self.__process_svgs, ( p, ) )
-
-        # close up access to the pool
-        _t_pool.close( )
-
-        # join the threads to be run
-        _t_pool.join( )
-
-        # clean up
-        del _t_pool
+            pool.apply_async( self.__process_svgs, ( p, ) )
 
     # process pngs
     def __process_pngs( self, path ):
