@@ -201,20 +201,22 @@ class KP_Common:
             return '"' + _path + '"'
 
     # execute a shell command
-    def execute( self, _cmd, _quiet = True, _env=None ):
+    def execute( self, _cmd, _quiet = True ):
 
         # import the subprocess module
-        import subprocess
+        import subprocess, shlex
 
-        # we don't want the output from this, so run it quietly
+        # only use shell=True if the command actually needs it
+        # pipes, redirects, and logical operators require a shell to interpret
+        _needs_shell = any( c in _cmd for c in [ '|', '>', '&&', '||', '&' ] )
+
+        # convert to argument list if shell not needed, faster and skips shell spawn
+        _args = _cmd if _needs_shell else shlex.split( _cmd )
+
         if _quiet:
-
-            # execute the command silently
-            subprocess.call( [ _cmd ], shell=True, stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL, env=_env )
+            subprocess.call( _args, shell=_needs_shell, stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL )
         else:
-
-            # we do want the output
-            return subprocess.check_output( [ _cmd ], shell=True, env=_env )
+            return subprocess.check_output( _args, shell=_needs_shell )
 
     # our pretty printer ;)
     def my_print( self, _type, _str ):
