@@ -2,8 +2,30 @@
 
 class KP_Common:
 
+    # singleton instance holder
+    _instance = None
+
+    # flag to track if we've already initialized
+    _initialized = False
+
+    def __new__( self ):
+
+        # if no instance exists, create one
+        if KP_Common._instance is None:
+            KP_Common._instance = super( KP_Common, self ).__new__( KP_Common )
+
+        # always return the same instance
+        return KP_Common._instance
+
     # initialize us
     def __init__( self ):
+
+        # skip re-initialization if already done
+        if KP_Common._initialized:
+            return
+
+        # mark as initialized before doing any work
+        KP_Common._initialized = True
 
         # import os and json modules
         import os, json
